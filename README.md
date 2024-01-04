@@ -1,7 +1,12 @@
-Heart Rate Variability
+Cardiovascular Event and Atrial Fibrillation
 ==============================
 
-Heart Rate Variability Processing with Artificial Intelligence Techniques
+![Framework](framework.png)
+
+Framework Running Guide 
+------------
+in progress
+
 
 Project Organization
 ------------
