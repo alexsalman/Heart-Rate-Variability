@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
+
 import click
 import logging
 from pathlib import Path
@@ -8,10 +10,13 @@ import numpy as np
 from dotenv import find_dotenv, load_dotenv
 from matplotlib import pyplot as plt
 
-from make_dataset import loader
 from sdv.metadata import SingleTableMetadata
 from sdv.single_table import GaussianCopulaSynthesizer
 import seaborn as sns
+
+sys.path.append('.')
+
+from src.csv2df import csv2df
 
 
 def gcs(dataframe):
@@ -46,7 +51,7 @@ def main(input_filepath, output_filepath):
         cleaned data ready to be split for use (saved in ../processed).
     """
     # (1) loading dataset
-    dataframe, filename = loader(input_filepath)
+    dataframe, filename = csv2df(input_filepath)
     print(dataframe.shape)
     # (2) GCSynthesizer
     plt.figure(figsize=(20, 8))

@@ -7,6 +7,35 @@ Framework Running Guide
 ------------
 in progress
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Prerequisites
+
+> Conda! If you haven't installed Conda yet, you can download and install it from the official website, [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
+
+## Installation
+###### Clone the repository
+```
+git clone https://github.com/alexsalman/heart_rate_variability.git
+```
+###### Change directory
+```
+cd heart_rate_variability
+```
+###### Create conda environment 
+```
+conda create -n <env-name>
+```
+###### Activate conda environment 
+```
+source activate <env-name>
+```
 
 Project Organization
 ------------

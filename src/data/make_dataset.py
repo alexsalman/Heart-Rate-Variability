@@ -1,21 +1,17 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import click
 import logging
-import pandas as pd
+
+sys.path.append('.')
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 from sklearn.model_selection import train_test_split
+from src.csv2df import csv2df
 
 
-def loader(input_filepath):
-    # Extract the name of the CSV file (excluding the extension)
-    filename = os.path.splitext(os.path.basename(input_filepath))[0]
-    # Load the CSV file into a DataFrame
-    dataframe = pd.read_csv(input_filepath)
-    return dataframe, filename
-
-
+# selects large class datapoints as many as small class
 def sampler(dataframe, large_class, small_class, small_class_count):
     count = 0
     large_class_indices, small_class_indices = [], []
@@ -30,8 +26,8 @@ def sampler(dataframe, large_class, small_class, small_class_count):
     return large_class_indices + small_class_indices
 
 
-def featurer(dataframe):
-    # feature selection
+# select features and shuffle the dataset
+def feature(dataframe):
     chosen_columns = ['PNS index', 'SNS index', 'Stress index', 'Mean RR  (ms)', 'SDNN (ms)', 'Mean HR (beats/min)',
                       'SD HR (beats/min)', 'Min HR (beats/min)', 'Max HR (beats/min)', 'RMSSD (ms)', 'NNxx (beats)',
                       'pNNxx (%)', 'RR tri index', 'TINN (ms)', 'DC (ms)', 'DCmod (ms)', 'AC (ms)', 'ACmod (ms)',
@@ -57,16 +53,21 @@ def main(input_filepath, output_filepath):
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be split for use (saved in ../interim).
     """
-    # (1) loading dataset
-    dataframe, filename = loader(input_filepath)
-    # (2) sample selection
-    dataframe_indices = sampler(dataframe, 0, 1, len(dataframe.loc[dataframe['label'] == 1, :]))
+# (1) loading dataset
+    dataframe, filename = csv2df(input_filepath)
+# (2) sample selection
+    label_0_count = dataframe['label'].value_counts().get(0, 1)
+    label_1_count = dataframe['label'].value_counts().get(1, 0)
+    if label_0_count >= label_1_count:
+        dataframe_indices = sampler(dataframe, 0, 1, label_1_count)
+    else:
+        dataframe_indices = sampler(dataframe, 1, 0, label_0_count)
     dataframe = dataframe.loc[dataframe_indices]
-    # (3) & (4) feature selection, shuffling
-    shuffled = featurer(dataframe)
-    # (5) splitting
+# (3) & (4) feature selection, shuffling
+    shuffled = feature(dataframe)
+# (5) splitting
     train_df, test_df = train_test_split(shuffled, test_size=0.3, random_state=42)
-    # (6) save it in interim
+# (6) save for folder given at prompt
     if output_filepath.endswith(os.path.sep):
         output_filepath = output_filepath[:-1]
     else:
@@ -76,13 +77,10 @@ def main(input_filepath, output_filepath):
 
     train_df.to_csv(train_path, index=False)
     test_df.to_csv(test_path, index=False)
-    print(train_df.head)
-    print(test_df.head)
-    print(train_df.shape)
-    print(test_df.shape)
 
     logger = logging.getLogger(__name__)
-    logger.info('Dataset has been: [1]loaded, [2]sampled (rows selected), [3]featured (columns selected), [4]shuffled, and [5]splitted')
+    logger.info(
+        '*** Dataset is loaded, sampled (rows selected), featured (columns selected), shuffled, and split (train:test) ***')
 
 
 if __name__ == '__main__':

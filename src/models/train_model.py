@@ -41,14 +41,14 @@ def fc_nn(x_train, y_train):
     # model.add(BatchNormalization())
     model.add(Activation('relu'))
     # model.add(Dropout(0.5))
-    model.add(Dense(128))
+    model.add(Dense(64))
     # model.add(BatchNormalization())
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(128))
+    model.add(Dropout(0.6))
+    model.add(Dense(64))
     # model.add(BatchNormalization())
     model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.6))
 
     model.add(Dense(1, activation='sigmoid'))
     # model compilation
