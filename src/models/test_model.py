@@ -78,7 +78,7 @@ def main(input_filepath, output_filepath):
     # (1) loading dataset
     dataframe, filename = loader(input_filepath)
 
-    model = load_model('models/naples_model.keras')
+    model = tf.keras.models.load_model('models/florance_model.keras')
     # (2) normalizing
 
     test(model, data, dataframe['label'])

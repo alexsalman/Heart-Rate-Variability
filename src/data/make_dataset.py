@@ -65,7 +65,7 @@ def main(input_filepath, output_filepath):
     # (3) & (4) feature selection, shuffling
     shuffled = featurer(dataframe)
     # (5) splitting
-    train_df, test_df = train_test_split(shuffled, test_size=0.5, random_state=0)
+    train_df, test_df = train_test_split(shuffled, test_size=0.3, random_state=42)
     # (6) save it in interim
     if output_filepath.endswith(os.path.sep):
         output_filepath = output_filepath[:-1]

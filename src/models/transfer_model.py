@@ -22,6 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from keras.models import Sequential
 from keras.layers import Dense, BatchNormalization, Dropout, Activation
 from keras.optimizers import Adam
+from tensorflow.python.keras.models import load_model
 
 
 def loader(input_filepath):
@@ -33,41 +34,39 @@ def loader(input_filepath):
 
 
 # fully connected neural network
-def fc_nn(x_train, y_train):
+def transfer(model, x_train, y_train):
     tf.keras.utils.set_random_seed(43)
 
-    model = Sequential()
-    model.add(Dense(64, input_dim=x_train.shape[1]))
-    # model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    # model.add(Dropout(0.5))
-    model.add(Dense(128))
-    # model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(128))
-    # model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
+    for layer in model.layers[:-1]:
+        print('1')
+        layer.trainable = False
 
-    model.add(Dense(1, activation='sigmoid'))
-    # model compilation
-    model.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(x_train, y_train, epochs=50, batch_size=32, validation_split=0.2, shuffle=False)
+    florance = Sequential()
+    for layer in model.layers[:-4]:
+        florance.add(layer)
+    florance.add(Dense(32, activation='relu', name='new_layer1'))
+    # florance.add(BatchNormalization(name='new_layer2'))
 
-    return model
+    # florance.add(Dense(16, activation='relu', name='alex'))
+
+    florance.add(Dense(1, activation='sigmoid', name='new_layer9'))
+    florance.summary()
+    florance.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
+    florance.fit(x_train, y_train, epochs=40, batch_size=32, validation_split=0.2, shuffle=False)
+
+    return florance
 
 
-def test(model, x, y):
-    y_probabilities = model.predict(x)
+def test(model, x_test, y_test):
+    y_probabilities = model.predict(x_test)
     # threshold adjustment
     threshold = 0.5
     # Convert probabilities to binary predictions based on the threshold
     y_predictions = (y_probabilities >= threshold).astype(int)
     # Evaluate the model with the adjusted threshold
-    conf_matrix = confusion_matrix(y, y_predictions)
-    class_report = classification_report(y, y_predictions)
-    auc = roc_auc_score(y, y_predictions)
+    conf_matrix = confusion_matrix(y_test, y_predictions)
+    class_report = classification_report(y_test, y_predictions)
+    auc = roc_auc_score(y_test, y_predictions)
     # flatten confusion matrix
     cm_list = conf_matrix.flatten().tolist()
 
@@ -97,31 +96,32 @@ def main(input_filepath, output_filepath):
     """
 
     # (1) loading dataset
-    dataframe, filename = loader(input_filepath)
-    # test for scaling
-    test_dataframe, test_filename = loader('data/interim/dataset_florance_testing.csv')
 
-    # (2) normalizing
+    test_path = 'data/interim/dataset_naples_testing.csv'
+    dataframe, filename = loader(input_filepath)
+    dataframe_test, filename_test = loader(test_path)
+    # (2) loading Task1 model
+    model = tf.keras.models.load_model('models/florance_model.keras')
+    # (3) normalizing
     sc = StandardScaler()
     x_train = sc.fit_transform(dataframe.drop('label', axis=1))
-    x_test = sc.transform(test_dataframe.drop('label', axis=1))
-
+    x_test = sc.transform(dataframe_test.drop('label', axis=1))
     y_train = dataframe['label']
+    y_test = dataframe_test['label']
 
+    model = transfer(model, x_train, y_train)
+    test(model, x_test, y_test)
 
-    # FCNN
-    model = fc_nn(x_train, y_train)
-    test(model, x_test, test_dataframe['label'])
     # (3) save it in models
     if output_filepath.endswith(os.path.sep):
         output_filepath = output_filepath[:-1]
     else:
         output_filepath
-    path = output_filepath + '/' + 'florance_model.keras'
-    model.save(path, save_format="tf")
-    np.savetxt(output_filepath + '/' + 'test_features.csv', x_test, delimiter=',')
+    path = output_filepath + '/' + 'naples_model.keras'
+    model.save(path)
+    # # np.savetxt(output_filepath + '/' + 'test_features.csv', x_test, delimiter=',')
     logger = logging.getLogger(__name__)
-    logger.info('Model has been: [1]trained')
+    logger.info('Model has been: [1]transfered')
 
 
 if __name__ == '__main__':
