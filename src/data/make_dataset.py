@@ -5,10 +5,10 @@ import click
 import logging
 
 sys.path.append('.')
+from src.csv2df import csv2df
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 from sklearn.model_selection import train_test_split
-from src.csv2df import csv2df
 
 
 # selects large class datapoints as many as small class
@@ -51,7 +51,7 @@ def feature(dataframe):
 @click.argument('output_filepath', type=click.Path())
 def main(input_filepath, output_filepath):
     """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be split for use (saved in ../interim).
+        cleaned data ready for use (saved in ../interim).
     """
 # (1) loading dataset
     dataframe, filename = csv2df(input_filepath)
@@ -67,7 +67,7 @@ def main(input_filepath, output_filepath):
     shuffled = feature(dataframe)
 # (5) splitting
     train_df, test_df = train_test_split(shuffled, test_size=0.3, random_state=42)
-# (6) save for folder given at prompt
+# (6) save it in ../interim
     if output_filepath.endswith(os.path.sep):
         output_filepath = output_filepath[:-1]
     else:

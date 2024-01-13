@@ -36,7 +36,25 @@ conda create -n <env-name>
 ```
 source activate <env-name>
 ```
-
+###### Data processing 
+```
+python src/data/make_dataset.py data/raw/<Atrial Fibrillation Data> data/interim/
+```
+```
+python src/data/make_dataset.py data/raw/<Cardiovascular Event Data> data/interim/
+```
+###### Synthetic data generation
+```
+python src/data/generate_synthetic.py data/interim/<Atrial Fibrillation Training Data> data/processed/
+```
+###### Deep learning model trained on synthetic data of Atrial Fibrillation
+```
+python src/models/train_model.py data/processed/<Atrial Fibrillation Synthetic Data> models/
+```
+###### Deep learning model tested on real data of Atrial Fibrillation
+```
+python src/models/test_model.py data/interim/<Atrial Fibrillation Real Data> reports/figures/
+```
 Project Organization
 ------------
 

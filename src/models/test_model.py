@@ -1,42 +1,24 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import click
 import logging
-from pathlib import Path
-
+import datetime
 import numpy as np
-import pandas as pd
-from dotenv import find_dotenv, load_dotenv
-from matplotlib import pyplot as plt
-
-from sdv.metadata import SingleTableMetadata
-from sdv.single_table import GaussianCopulaSynthesizer
-import seaborn as sns
-
 import tensorflow as tf
-import pandas as pdls
-import numpy as np
-import matplotlib.pyplot as plt
+
+sys.path.append('.')
+from src.csv2df import csv2df
+from pathlib import Path
+from dotenv import find_dotenv, load_dotenv
 from sklearn.metrics import roc_auc_score, classification_report, confusion_matrix
-from sklearn.preprocessing import StandardScaler
-from keras.models import Sequential
-from keras.layers import Dense, BatchNormalization, Dropout, Activation
-from keras.optimizers import Adam
-from keras.models import load_model
 
 
-def loader(input_filepath):
-    # Extract the name of the CSV file (excluding the extension)
-    filename = os.path.splitext(os.path.basename(input_filepath))[0]
-    # Load the CSV file into a DataFrame
-    dataframe = pd.read_csv(input_filepath)
-    return dataframe, filename
-
-
+# general model tester
 def test(model, x, y):
     y_probabilities = model.predict(x)
     # threshold adjustment
-    threshold = 0.5
+    threshold = 0.4
     # Convert probabilities to binary predictions based on the threshold
     y_predictions = (y_probabilities >= threshold).astype(int)
     # Evaluate the model with the adjusted threshold
@@ -59,38 +41,47 @@ def test(model, x, y):
     print("Area Under Curve:", round(auc, 2))
     print("Confusion Matrix:\n", conf_matrix)
     print("\nClassification Report:\n", class_report)
-
-    return
+    return sensitivity, specificity, auc, conf_matrix, class_report
 
 
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(input_filepath, output_filepath):
-    """ Runs data processing scripts to turn raw data from (../interim) into
-        cleaned data ready to be split for use (saved in ../processed).
+    """ Runs model testing scripts on real data from (../interim) into
+        metrics figure (saved in ../figures).
     """
-    test_path = 'models/test_features.csv'
-
+# (1) loading trained model, and testing datas
+    model = tf.keras.models.load_model('models/naples_model.keras')
+    test_path = 'models/naples_test_features.csv'
     # Use genfromtxt to load the CSV file into a NumPy array
     data = np.genfromtxt(test_path, delimiter=',')
-
-    # (1) loading dataset
-    dataframe, filename = loader(input_filepath)
-
-    model = tf.keras.models.load_model('models/florance_model.keras')
-    # (2) normalizing
-
-    test(model, data, dataframe['label'])
-
-    # (3) save it in models
+    dataframe, filename = csv2df(input_filepath)
+    print(data.shape)
+    print(dataframe.shape)
+# (2) testing model
+    sensitivity, specificity, auc, conf_matrix, class_report = test(model, data, dataframe['label'])
+# (3) save it in /reports/figures
     if output_filepath.endswith(os.path.sep):
         output_filepath = output_filepath[:-1]
     else:
         output_filepath
 
+    # Generate a timestamp for the file name
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # Create a file name with the timestamp
+    file_name = f'testing_results_{timestamp}.txt'
+    # Open a file in write mode
+    with open(output_filepath + '/' + file_name, 'w') as file:
+        file.write('Sensitivity: ' + str(round(sensitivity, 2)) + '\n')
+        file.write('Specificity: ' + str(round(specificity, 2)) + '\n')
+        file.write('Area Under Curve: ' + str(round(auc, 2)) + '\n')
+        file.write('Confusion Matrix:\n' + str(conf_matrix) + '\n')
+        file.write('\nClassification Report:\n' + str(class_report) + '\n')
+
     logger = logging.getLogger(__name__)
-    logger.info('Model has been: [1]tested')
+    logger.info(
+        '*** Model is tested ***')
 
 
 if __name__ == '__main__':

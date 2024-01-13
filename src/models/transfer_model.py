@@ -38,29 +38,28 @@ def transfer(model, x_train, y_train):
     tf.keras.utils.set_random_seed(43)
 
     for layer in model.layers[:-1]:
-        print('1')
         layer.trainable = False
 
-    florance = Sequential()
-    for layer in model.layers[:-4]:
-        florance.add(layer)
-    florance.add(Dense(32, activation='relu', name='new_layer1'))
-    # florance.add(BatchNormalization(name='new_layer2'))
+    naples = Sequential()
+    for layer in model.layers[:-7]:
+        naples.add(layer)
+    naples.add(Dense(32, activation='relu', name='new_layer1'))
+    # naples.add(BatchNormalization(name='new_layer2'))
+    # naples.add(Dense(32, activation='relu', name='alex'))
+    naples.add(Dropout(0.5, name='dropout_3'))
 
-    # florance.add(Dense(16, activation='relu', name='alex'))
+    naples.add(Dense(1, activation='sigmoid', name='new_layer9'))
+    naples.summary()
+    naples.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
+    naples.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=False)
 
-    florance.add(Dense(1, activation='sigmoid', name='new_layer9'))
-    florance.summary()
-    florance.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
-    florance.fit(x_train, y_train, epochs=40, batch_size=32, validation_split=0.2, shuffle=False)
-
-    return florance
+    return naples
 
 
 def test(model, x_test, y_test):
     y_probabilities = model.predict(x_test)
     # threshold adjustment
-    threshold = 0.5
+    threshold = 0.4
     # Convert probabilities to binary predictions based on the threshold
     y_predictions = (y_probabilities >= threshold).astype(int)
     # Evaluate the model with the adjusted threshold
@@ -119,7 +118,7 @@ def main(input_filepath, output_filepath):
         output_filepath
     path = output_filepath + '/' + 'naples_model.keras'
     model.save(path)
-    # # np.savetxt(output_filepath + '/' + 'test_features.csv', x_test, delimiter=',')
+    np.savetxt(output_filepath + '/' + 'naples_test_features.csv', x_test, delimiter=',')
     logger = logging.getLogger(__name__)
     logger.info('Model has been: [1]transfered')
 
