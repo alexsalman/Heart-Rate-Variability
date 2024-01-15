@@ -1,0 +1,17 @@
+Sensitivity: 0.83
+Specificity: 0.8
+Area Under Curve: 0.82
+Confusion Matrix:
+[[5 1]
+ [1 4]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.83      0.83      0.83         6
+           1       0.80      0.80      0.80         5
+
+    accuracy                           0.82        11
+   macro avg       0.82      0.82      0.82        11
+weighted avg       0.82      0.82      0.82        11
+

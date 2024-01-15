@@ -6,6 +6,7 @@ import logging
 import datetime
 import numpy as np
 import tensorflow as tf
+import shap
 
 sys.path.append('.')
 from src.csv2df import csv2df
@@ -61,7 +62,26 @@ def main(input_filepath, output_filepath):
     print(dataframe.shape)
 # (2) testing model
     sensitivity, specificity, auc, conf_matrix, class_report = test(model, data, dataframe['label'])
-# (3) save it in /reports/figures
+# (3) shap
+#     # Use SHAP to explain the model's predictions
+#     explainer = shap.DeepExplainer(model)
+#     shap_values = explainer.shap_values(dataframe)
+#
+#     # Plot the SHAP values for a single prediction
+#     shap.summary_plot(shap_values, dataframe, feature_names=['PNS index', 'SNS index', 'Stress index', 'Mean RR  (ms)', 'SDNN (ms)', 'Mean HR (beats/min)',
+#                       'SD HR (beats/min)', 'Min HR (beats/min)', 'Max HR (beats/min)', 'RMSSD (ms)', 'NNxx (beats)',
+#                       'pNNxx (%)', 'RR tri index', 'TINN (ms)', 'DC (ms)', 'DCmod (ms)', 'AC (ms)', 'ACmod (ms)',
+#                       'VLF (Hz)', 'LF (Hz)', 'HF (Hz)', 'VLF (ms^2)', 'LF (ms^2)', 'HF (ms^2)', 'VLF (log)', 'LF (log)',
+#                       'HF (log)', 'VLF (%)', 'LF (%)', 'HF (%)', 'LF (n.u.)', 'HF (n.u.)', 'Total power (ms^2)',
+#                       'LF/HF ratio', 'RESP (Hz)', 'SD1 (ms)', 'SD2 (ms)', 'SD2/SD1 ratio', 'Approximate entropy (ApEn)',
+#                       'Sample entropy (SampEn)', 'alpha 1', 'alpha 2', 'Correlation dimension (D2)',
+#                       'Mean line length (beats)', 'Max line length (beats)', 'Recurrence rate (REC) (%)',
+#                       'Determinism (DET) (%)', 'Shannon entropy', 'MSE(1)', 'MSE(2)', 'VLF (Hz) AR spectrum',
+#                       'LF (Hz) AR spectrum', 'HF (Hz) AR spectrum', 'VLF (ms^2) AR spectrum', 'LF (ms^2) AR spectrum',
+#                       'HF (ms^2) AR spectrum', 'VLF (log) AR spectrum', 'LF (log) AR spectrum', 'HF (log) AR spectrum',
+#                       'VLF (%) AR spectrum', 'LF (%) AR spectrum', 'HF (%) AR spectrum', 'LF (n.u.) AR spectrum',
+#                       'HF (n.u.) AR spectrum'])
+# (4) save it in /reports/figures
     if output_filepath.endswith(os.path.sep):
         output_filepath = output_filepath[:-1]
     else:
