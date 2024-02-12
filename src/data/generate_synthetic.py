@@ -14,6 +14,7 @@ from dotenv import find_dotenv, load_dotenv
 from matplotlib import pyplot as plt
 from sdv.metadata import SingleTableMetadata
 from sdv.single_table import GaussianCopulaSynthesizer
+from sdv.evaluation.single_table import evaluate_quality
 
 
 # Gaussian Copula Synthesizer - Data Generator
@@ -21,9 +22,14 @@ def gcs(dataframe):
     # create metadata table
     metadata = SingleTableMetadata()
     metadata.detect_from_dataframe(dataframe)
+    # metadata.update_column('TINN (ms)', sdtype='id')
+    # metadata.set_primary_key(column_name='TINN (ms)')
+
     # validate metadata
     metadata.validate()
     metadata.validate_data(data=dataframe)
+
+
     # generate an instance of the synthesizer model
     synthesizer_GC = GaussianCopulaSynthesizer(
         metadata,  # required
@@ -33,9 +39,22 @@ def gcs(dataframe):
     )
     # fit model on dataframe
     synthesizer_GC.fit(dataframe)
+    # num_rows = len(dataframe)*10
+    # print('hi', len(dataframe))
     # generate synthetic data
     GC_synthetic_data = synthesizer_GC.sample(num_rows=100)
+
+
+    quality_report = evaluate_quality(
+        dataframe,
+        GC_synthetic_data,
+        metadata
+    )
+    print(quality_report)
+
+
     combined_data = pd.concat([dataframe, GC_synthetic_data], ignore_index=False)
+
     return combined_data
 
 
@@ -53,21 +72,23 @@ def main(input_filepath, output_filepath):
     plt.figure(figsize=(20, 8))
     heatmap = sns.heatmap(dataframe.corr())
     heatmap.set_title('Correlation Heatmap for Real Data')
-    plt.savefig('reports/figures/heatmap_real_data.png', dpi=400)
+
     # generate synthetic data
     gcs_synthetic_data = gcs(dataframe)
     # heat map synthetic data
     plt.figure(figsize=(20, 8))
     heatmap = sns.heatmap(gcs_synthetic_data.corr())
     heatmap.set_title('Correlation Heatmap for Synthetic Data')
-    plt.savefig('reports/figures/heatmap_synthetic_data.png', dpi=400)
+    # plt.savefig('reports/figures/heatmap_synthetic_data.png', dpi=400)
+
+
 # (3) save it in ../processed
     if output_filepath.endswith(os.path.sep):
         output_filepath = output_filepath[:-1]
     else:
         output_filepath
-    path = output_filepath + '/' + filename + '_' + 'synthesized.csv'
-    gcs_synthetic_data.to_csv(path, index=False)
+    # path = output_filepath + '/' + filename + '_' + 'synthesized.csv'
+    # gcs_synthetic_data.to_csv(path, index=False)
 
     logger = logging.getLogger(__name__)
     logger.info(

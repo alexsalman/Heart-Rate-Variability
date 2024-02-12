@@ -36,84 +36,100 @@ def loader(input_filepath):
 
 # fully connected neural network
 def transfer(model, x_train, y_train):
-    num_folds = 10  # Adjust as needed
-    k_fold = StratifiedKFold(n_splits=num_folds, shuffle=False)
+    # num_folds = 10  # Adjust as needed
+    # k_fold = StratifiedKFold(n_splits=num_folds, shuffle=False)
+    #
+    # best_model = None
+    # best_metrics = {
+    #     'accuracy': 0.0,
+    #     'recall_class_0': 0.0,
+    #     'recall_class_1': 0.0,
+    #     'precision_class_0': 0.0,
+    #     'precision_class_1': 0.0,
+    #     'f1_class_0': 0.0,
+    #     'f1_class_1': 0.0
+    # }
+    #
+    # for fold_num, (train_idx, val_idx) in enumerate(k_fold.split(x_train, y_train)):
+    #     x_val, y_val = x_train[val_idx], y_train.iloc[val_idx]
+    #     # random seed for reproducibility.
+    #     tf.keras.utils.set_random_seed(43)
+    #
+    #     for layer in model.layers[:-1]:
+    #         layer.trainable = False
+    #
+    #     naples = Sequential()
+    #     for layer in model.layers[:-7]:
+    #         naples.add(layer)
+    #     naples.add(Dense(32, activation='relu', name='new_layer1'))
+    #     # naples.add(BatchNormalization(name='new_layer2'))
+    #     # naples.add(Dense(32, activation='relu', name='alex'))
+    #     naples.add(Dropout(0.5, name='dropout_3'))
+    #
+    #     naples.add(Dense(1, activation='sigmoid', name='new_layer9'))
+    #     naples.summary()
+    #     naples.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
+    #     naples.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=False)
+    #
+    #     # Evaluate on the validation set
+    #     predictions = naples.predict(x_val)
+    #
+    #     # Apply threshold to convert to binary format
+    #     threshold = 0.4
+    #     binary_predictions = (predictions > threshold).astype(int)
+    #     report = classification_report(y_val, binary_predictions, target_names=['Class 0', 'Class 1'], output_dict=True)
+    #
+    #     # Extract metrics for both classes
+    #     accuracy = report['accuracy']
+    #     recall_class_0 = report['Class 0']['recall']
+    #     recall_class_1 = report['Class 1']['recall']
+    #     precision_class_0 = report['Class 0']['precision']
+    #     precision_class_1 = report['Class 1']['precision']
+    #     f1_class_0 = report['Class 0']['f1-score']
+    #     f1_class_1 = report['Class 1']['f1-score']
+    #
+    #     # Update best metrics if the current fold has higher values
+    #     if accuracy > best_metrics['accuracy'] and recall_class_0 > best_metrics['recall_class_0'] \
+    #             and recall_class_1 > best_metrics['recall_class_1'] and precision_class_0 > best_metrics['precision_class_0'] \
+    #             and precision_class_1 > best_metrics['precision_class_1'] and f1_class_0 > best_metrics['f1_class_0'] \
+    #             and f1_class_1 > best_metrics['f1_class_1']:
+    #         best_model = naples
+    #         best_metrics = {
+    #             'accuracy': accuracy,
+    #             'recall_class_0': recall_class_0,
+    #             'recall_class_1': recall_class_1,
+    #             'precision_class_0': precision_class_0,
+    #             'precision_class_1': precision_class_1,
+    #             'f1_class_0': f1_class_0,
+    #             'f1_class_1': f1_class_1
+    #         }
+    #
+    # # Train the best model on the entire dataset
+    # best_model.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=False)
+    tf.keras.utils.set_random_seed(43)
 
-    best_model = None
-    best_metrics = {
-        'accuracy': 0.0,
-        'recall_class_0': 0.0,
-        'recall_class_1': 0.0,
-        'precision_class_0': 0.0,
-        'precision_class_1': 0.0,
-        'f1_class_0': 0.0,
-        'f1_class_1': 0.0
-    }
+    for layer in model.layers[:-1]:
+        layer.trainable = False
 
-    for fold_num, (train_idx, val_idx) in enumerate(k_fold.split(x_train, y_train)):
-        x_val, y_val = x_train[val_idx], y_train.iloc[val_idx]
-        # random seed for reproducibility.
-        tf.keras.utils.set_random_seed(43)
+    naples = Sequential()
+    for layer in model.layers[:-7]:
+        naples.add(layer)
+    naples.add(Dense(32, activation='relu', name='new_layer1'))
+    # naples.add(BatchNormalization(name='new_layer2'))
+    # naples.add(Dense(32, activation='relu', name='alex'))
+    naples.add(Dropout(0.5, name='dropout_3'))
 
-        for layer in model.layers[:-1]:
-            layer.trainable = False
-
-        naples = Sequential()
-        for layer in model.layers[:-7]:
-            naples.add(layer)
-        naples.add(Dense(32, activation='relu', name='new_layer1'))
-        # naples.add(BatchNormalization(name='new_layer2'))
-        # naples.add(Dense(32, activation='relu', name='alex'))
-        naples.add(Dropout(0.5, name='dropout_3'))
-
-        naples.add(Dense(1, activation='sigmoid', name='new_layer9'))
-        naples.summary()
-        naples.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
-        naples.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=False)
-
-        # Evaluate on the validation set
-        predictions = naples.predict(x_val)
-
-        # Apply threshold to convert to binary format
-        threshold = 0.4
-        binary_predictions = (predictions > threshold).astype(int)
-        report = classification_report(y_val, binary_predictions, target_names=['Class 0', 'Class 1'], output_dict=True)
-
-        # Extract metrics for both classes
-        accuracy = report['accuracy']
-        recall_class_0 = report['Class 0']['recall']
-        recall_class_1 = report['Class 1']['recall']
-        precision_class_0 = report['Class 0']['precision']
-        precision_class_1 = report['Class 1']['precision']
-        f1_class_0 = report['Class 0']['f1-score']
-        f1_class_1 = report['Class 1']['f1-score']
-
-        # Update best metrics if the current fold has higher values
-        if accuracy > best_metrics['accuracy'] and recall_class_0 > best_metrics['recall_class_0'] \
-                and recall_class_1 > best_metrics['recall_class_1'] and precision_class_0 > best_metrics['precision_class_0'] \
-                and precision_class_1 > best_metrics['precision_class_1'] and f1_class_0 > best_metrics['f1_class_0'] \
-                and f1_class_1 > best_metrics['f1_class_1']:
-            best_model = naples
-            best_metrics = {
-                'accuracy': accuracy,
-                'recall_class_0': recall_class_0,
-                'recall_class_1': recall_class_1,
-                'precision_class_0': precision_class_0,
-                'precision_class_1': precision_class_1,
-                'f1_class_0': f1_class_0,
-                'f1_class_1': f1_class_1
-            }
-
-    # Train the best model on the entire dataset
-    best_model.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=False)
-
-    return best_model
+    naples.add(Dense(1, activation='sigmoid', name='new_layer9'))
+    naples.summary()
+    naples.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
+    naples.fit(x_train, y_train, epochs=10, batch_size=32, validation_split=0.2, shuffle=False)
+    return naples
 
 
 def test(model, x_test, y_test):
     y_probabilities = model.predict(x_test)
     # threshold adjustment
-    threshold = 0.5
+    threshold = 0.4
     # Convert probabilities to binary predictions based on the threshold
     y_predictions = (y_probabilities >= threshold).astype(int)
     # Evaluate the model with the adjusted threshold
@@ -157,8 +173,8 @@ def main(input_filepath, output_filepath):
     model = tf.keras.models.load_model('models/florance_model.keras')
     # (3) normalizing
     sc = StandardScaler()
-    x_train = sc.fit_transform(dataframe.drop('label', axis=1))
-    x_test = sc.transform(dataframe_test.drop('label', axis=1))
+    x_train = sc.fit_transform(dataframe.drop(['label'], axis=1))
+    x_test = sc.transform(dataframe_test.drop(['label'], axis=1))
     y_train = dataframe['label']
     y_test = dataframe_test['label']
 
@@ -181,7 +197,7 @@ def main(input_filepath, output_filepath):
                       'HF (ms^2) AR spectrum', 'VLF (log) AR spectrum', 'LF (log) AR spectrum', 'HF (log) AR spectrum',
                       'VLF (%) AR spectrum', 'LF (%) AR spectrum', 'HF (%) AR spectrum', 'LF (n.u.) AR spectrum',
                       'HF (n.u.) AR spectrum'])
-    plt.savefig('reports/figures/SHAP_CE.png', dpi=800)
+    # plt.savefig('reports/figures/SHAP_CE.png', dpi=800)
 
 
     # (3) save it in models
@@ -189,9 +205,9 @@ def main(input_filepath, output_filepath):
         output_filepath = output_filepath[:-1]
     else:
         output_filepath
-    path = output_filepath + '/' + 'naples_model.keras'
+    # path = output_filepath + '/' + 'naples_model.keras'
     # model.save(path)
-    # np.savetxt(output_filepath + '/' + 'naples_test_features.csv', x_test, delimiter=',')
+    # np.savetxt(output_filepath + '/' + 'scaled_naples_test_features.csv', x_test, delimiter=',')
     logger = logging.getLogger(__name__)
     logger.info('Model has been: [1]transfered')
 

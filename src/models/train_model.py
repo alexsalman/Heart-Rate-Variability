@@ -52,85 +52,110 @@ def test(model, x, y):
 
 # fully connected neural network
 def fc_nn(x_train, y_train):
-    num_folds = 10  # Adjust as needed
-    k_fold = StratifiedKFold(n_splits=num_folds, shuffle=False)
+    # num_folds = 10  # Adjust as needed
+    # k_fold = StratifiedKFold(n_splits=num_folds, shuffle=False)
+    #
+    # best_model = None
+    # best_metrics = {
+    #     'accuracy': 0.0,
+    #     'recall_class_0': 0.0,
+    #     'recall_class_1': 0.0,
+    #     'precision_class_0': 0.0,
+    #     'precision_class_1': 0.0,
+    #     'f1_class_0': 0.0,
+    #     'f1_class_1': 0.0
+    # }
+    #
+    # for fold_num, (train_idx, val_idx) in enumerate(k_fold.split(x_train, y_train)):
+    #     x_val, y_val = x_train[val_idx], y_train.iloc[val_idx]
+    #     # random seed for reproducibility.
+    #     tf.keras.utils.set_random_seed(43)
+    #     # model architecture
+    #     model = Sequential()
+    #     # input layer
+    #     model.add(Dense(64, input_dim=x_train.shape[1], name='DL_input_layer'))
+    #     model.add(Activation('relu', name='DL_activation'))
+    #     # hidden layer 1
+    #     model.add(Dense(64, name='DL_hidden_layer_1'))
+    #     model.add(Activation('relu'))
+    #     # dropout layer 1 (regularization to prevent overfitting)
+    #     model.add(Dropout(0.5, name='DL_dropout_1'))
+    #     # hidden layer 2
+    #     model.add(Dense(64, name='DL_hidden_layer_2'))
+    #     model.add(Activation('relu'))
+    #     # dropout layer 2 (regularization to prevent overfitting)
+    #     model.add(Dropout(0.5, name='DL_dropout_2'))
+    #     # output layer
+    #     model.add(Dense(1, activation='sigmoid', name='DL_output_layer'))
+    #     # print the model summary to view layer names and shapes
+    #     model.summary()
+    #     # model compilation
+    #     model.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
+    #     # model training
+    #     model.fit(x_train, y_train, epochs=50, batch_size=32, validation_split=0.2, shuffle=False)
+    #
+    #     # Evaluate on the validation set
+    #     predictions = model.predict(x_val)
+    #
+    #     # Apply threshold to convert to binary format
+    #     threshold = 0.5
+    #     binary_predictions = (predictions > threshold).astype(int)
+    #     report = classification_report(y_val, binary_predictions, target_names=['Class 0', 'Class 1'], output_dict=True)
+    #
+    #     # Extract metrics for both classes
+    #     accuracy = report['accuracy']
+    #     recall_class_0 = report['Class 0']['recall']
+    #     recall_class_1 = report['Class 1']['recall']
+    #     precision_class_0 = report['Class 0']['precision']
+    #     precision_class_1 = report['Class 1']['precision']
+    #     f1_class_0 = report['Class 0']['f1-score']
+    #     f1_class_1 = report['Class 1']['f1-score']
+    #
+    #     # Update best metrics if the current fold has higher values
+    #     if accuracy > best_metrics['accuracy'] and recall_class_0 > best_metrics['recall_class_0'] \
+    #             and recall_class_1 > best_metrics['recall_class_1'] and precision_class_0 > best_metrics['precision_class_0'] \
+    #             and precision_class_1 > best_metrics['precision_class_1'] and f1_class_0 > best_metrics['f1_class_0'] \
+    #             and f1_class_1 > best_metrics['f1_class_1']:
+    #         best_model = model
+    #         best_metrics = {
+    #             'accuracy': accuracy,
+    #             'recall_class_0': recall_class_0,
+    #             'recall_class_1': recall_class_1,
+    #             'precision_class_0': precision_class_0,
+    #             'precision_class_1': precision_class_1,
+    #             'f1_class_0': f1_class_0,
+    #             'f1_class_1': f1_class_1
+    #         }
+    #
+    # # Train the best model on the entire dataset
+    # best_model.fit(x_train, y_train, epochs=50, batch_size=32, validation_split=0.2, shuffle=False)
+    # random seed for reproducibility.
+    tf.keras.utils.set_random_seed(43)
+    # model architecture
+    model = Sequential()
+    # input layer
+    model.add(Dense(64, input_dim=x_train.shape[1], name='DL_input_layer'))
+    model.add(Activation('relu', name='DL_activation'))
+    # hidden layer 1
+    model.add(Dense(64, name='DL_hidden_layer_1'))
+    model.add(Activation('relu'))
+    # dropout layer 1 (regularization to prevent overfitting)
+    model.add(Dropout(0.5, name='DL_dropout_1'))
+    # hidden layer 2
+    model.add(Dense(64, name='DL_hidden_layer_2'))
+    model.add(Activation('relu'))
+    # dropout layer 2 (regularization to prevent overfitting)
+    model.add(Dropout(0.5, name='DL_dropout_2'))
+    # output layer
+    model.add(Dense(1, activation='sigmoid', name='DL_output_layer'))
+    # print the model summary to view layer names and shapes
+    model.summary()
+    # model compilation
+    model.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
+    # model training
+    model.fit(x_train, y_train, epochs=50, batch_size=32, validation_split=0.2, shuffle=False)
 
-    best_model = None
-    best_metrics = {
-        'accuracy': 0.0,
-        'recall_class_0': 0.0,
-        'recall_class_1': 0.0,
-        'precision_class_0': 0.0,
-        'precision_class_1': 0.0,
-        'f1_class_0': 0.0,
-        'f1_class_1': 0.0
-    }
-
-    for fold_num, (train_idx, val_idx) in enumerate(k_fold.split(x_train, y_train)):
-        x_val, y_val = x_train[val_idx], y_train.iloc[val_idx]
-        # random seed for reproducibility.
-        tf.keras.utils.set_random_seed(43)
-        # model architecture
-        model = Sequential()
-        # input layer
-        model.add(Dense(64, input_dim=x_train.shape[1], name='DL_input_layer'))
-        model.add(Activation('relu', name='DL_activation'))
-        # hidden layer 1
-        model.add(Dense(64, name='DL_hidden_layer_1'))
-        model.add(Activation('relu'))
-        # dropout layer 1 (regularization to prevent overfitting)
-        model.add(Dropout(0.5, name='DL_dropout_1'))
-        # hidden layer 2
-        model.add(Dense(64, name='DL_hidden_layer_2'))
-        model.add(Activation('relu'))
-        # dropout layer 2 (regularization to prevent overfitting)
-        model.add(Dropout(0.5, name='DL_dropout_2'))
-        # output layer
-        model.add(Dense(1, activation='sigmoid', name='DL_output_layer'))
-        # print the model summary to view layer names and shapes
-        model.summary()
-        # model compilation
-        model.compile(optimizer=Adam(learning_rate=0.0005), loss='binary_crossentropy', metrics=['accuracy'])
-        # model training
-        model.fit(x_train, y_train, epochs=50, batch_size=32, validation_split=0.2, shuffle=False)
-
-        # Evaluate on the validation set
-        predictions = model.predict(x_val)
-
-        # Apply threshold to convert to binary format
-        threshold = 0.5
-        binary_predictions = (predictions > threshold).astype(int)
-        report = classification_report(y_val, binary_predictions, target_names=['Class 0', 'Class 1'], output_dict=True)
-
-        # Extract metrics for both classes
-        accuracy = report['accuracy']
-        recall_class_0 = report['Class 0']['recall']
-        recall_class_1 = report['Class 1']['recall']
-        precision_class_0 = report['Class 0']['precision']
-        precision_class_1 = report['Class 1']['precision']
-        f1_class_0 = report['Class 0']['f1-score']
-        f1_class_1 = report['Class 1']['f1-score']
-
-        # Update best metrics if the current fold has higher values
-        if accuracy > best_metrics['accuracy'] and recall_class_0 > best_metrics['recall_class_0'] \
-                and recall_class_1 > best_metrics['recall_class_1'] and precision_class_0 > best_metrics['precision_class_0'] \
-                and precision_class_1 > best_metrics['precision_class_1'] and f1_class_0 > best_metrics['f1_class_0'] \
-                and f1_class_1 > best_metrics['f1_class_1']:
-            best_model = model
-            best_metrics = {
-                'accuracy': accuracy,
-                'recall_class_0': recall_class_0,
-                'recall_class_1': recall_class_1,
-                'precision_class_0': precision_class_0,
-                'precision_class_1': precision_class_1,
-                'f1_class_0': f1_class_0,
-                'f1_class_1': f1_class_1
-            }
-
-    # Train the best model on the entire dataset
-    best_model.fit(x_train, y_train, epochs=50, batch_size=32, validation_split=0.2, shuffle=False)
-
-    return best_model
+    return model
 
 
 @click.command()
@@ -145,10 +170,12 @@ def main(input_filepath, output_filepath):
     test_dataframe, test_filename = csv2df('data/interim/dataset_florance_testing.csv')
 # (2) normalizing
     sc = StandardScaler()
-    x_train = sc.fit_transform(dataframe.drop('label', axis=1))
-    x_test = sc.transform(test_dataframe.drop('label', axis=1))
+    x_train = sc.fit_transform(dataframe.drop(['label'], axis=1))
+    x_test = sc.transform(test_dataframe.drop(['label'], axis=1))
     y_train = dataframe['label']
     y_test = test_dataframe['label']
+    print(x_train.shape)
+    print(x_test.shape)
 # (3) training fully connected neural network model
     model = fc_nn(x_train, y_train)
     test(model, x_test, y_test)
@@ -169,7 +196,7 @@ def main(input_filepath, output_filepath):
                       'HF (ms^2) AR spectrum', 'VLF (log) AR spectrum', 'LF (log) AR spectrum', 'HF (log) AR spectrum',
                       'VLF (%) AR spectrum', 'LF (%) AR spectrum', 'HF (%) AR spectrum', 'LF (n.u.) AR spectrum',
                       'HF (n.u.) AR spectrum'])
-    plt.savefig('reports/figures/SHAP_AF.png', dpi=800)
+    # plt.savefig('reports/figures/SHAP_AF.png', dpi=800)
 
 
 # (4) save it in models
@@ -177,9 +204,9 @@ def main(input_filepath, output_filepath):
         output_filepath = output_filepath[:-1]
     else:
         output_filepath
-    path = output_filepath + '/' + 'naples_model.keras'
+    path = output_filepath + '/' + 'florance_model.keras'
     # model.save(path, save_format="tf")
-    # np.savetxt(output_filepath + '/' + 'scaled__test_features.csv', x_test, delimiter=',')
+    # np.savetxt(output_filepath + '/' + 'scaled_florance_test_features.csv', x_test, delimiter=',')
 
     logger = logging.getLogger(__name__)
     logger.info(

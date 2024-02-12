@@ -1,25 +1,29 @@
-Cardiovascular Event and Atrial Fibrillation
+Heart Rate Variability (HRV) Processing
 ==============================
 
-![Framework](framework.png)
+![Framework](framework2.png)
+*Schematic Overview of HRV Classification Pipeline.*
 
-Framework Running Guide 
+🔍 Overview
 ------------
-in progress
+*In this study, we tackle the processing of patients’ heart rate variability (HRV)
+datasets for two classification tasks employing resource-efficient methods,
+synthetic data generation, deep learning techniques, and transfer learning.* 
 
-## Table of Contents
+## 📑 Table of Contents
 
-- [Prerequisites](#prerequisites)
+- [License](#license)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Evals](#evals)
+- [Project Organization](#project-organization)
 
-## Prerequisites
+## 📜 License
+You are free to use, modify, and distribute this project for any purpose. However, if you use this project in your work or derive from it, you must provide appropriate attribution by referencing this repository.
 
-> Conda! If you haven't installed Conda yet, you can download and install it from the official website, [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
+Refer to our, [MIT License](https://github.com/alexsalman/heart_rate_variability?tab=MIT-1-ov-file).
 
-## Installation
+## 🔧 Installation
 ###### Clone the repository
 ```
 git clone https://github.com/alexsalman/heart_rate_variability.git
@@ -36,6 +40,13 @@ conda create -n <env-name>
 ```
 source activate <env-name>
 ```
+###### Install software requirements
+``
+pip install -r requirements.txt
+``
+
+## 🚀 Usage
+
 ###### Data processing 
 ```
 python src/data/make_dataset.py data/raw/<Atrial Fibrillation Data> data/interim/
@@ -55,7 +66,10 @@ python src/models/train_model.py data/processed/<Atrial Fibrillation Synthetic D
 ```
 python src/models/test_model.py data/interim/<Atrial Fibrillation Real Data> reports/figures/
 ```
-Project Organization
+
+## 📊 Evals
+## 📁 Project Organization
+
 ------------
 
     ├── LICENSE

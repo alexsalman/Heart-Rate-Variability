@@ -19,7 +19,7 @@ from sklearn.metrics import roc_auc_score, classification_report, confusion_matr
 def test(model, x, y):
     y_probabilities = model.predict(x)
     # threshold adjustment
-    threshold = 0.4
+    threshold = 0.5
     # Convert probabilities to binary predictions based on the threshold
     y_predictions = (y_probabilities >= threshold).astype(int)
     # Evaluate the model with the adjusted threshold
@@ -54,7 +54,7 @@ def main(input_filepath, output_filepath):
     """
 # (1) loading trained model, and testing datas
     model = tf.keras.models.load_model('models/naples_model.keras')
-    test_path = 'models/naples_test_features.csv'
+    test_path = 'models/scaled_naples_test_features.csv'
     # Use genfromtxt to load the CSV file into a NumPy array
     data = np.genfromtxt(test_path, delimiter=',')
     dataframe, filename = csv2df(input_filepath)
