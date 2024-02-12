@@ -205,8 +205,8 @@ def main(input_filepath, output_filepath):
     else:
         output_filepath
     path = output_filepath + '/' + 'florance_model.keras'
-    # model.save(path, save_format="tf")
-    # np.savetxt(output_filepath + '/' + 'scaled_florance_test_features.csv', x_test, delimiter=',')
+    model.save(path, save_format="tf")
+    np.savetxt(output_filepath + '/' + 'scaled_florance_test_features.csv', x_test, delimiter=',')
 
     logger = logging.getLogger(__name__)
     logger.info(

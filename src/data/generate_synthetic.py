@@ -22,13 +22,10 @@ def gcs(dataframe):
     # create metadata table
     metadata = SingleTableMetadata()
     metadata.detect_from_dataframe(dataframe)
-    # metadata.update_column('TINN (ms)', sdtype='id')
-    # metadata.set_primary_key(column_name='TINN (ms)')
 
     # validate metadata
     metadata.validate()
     metadata.validate_data(data=dataframe)
-
 
     # generate an instance of the synthesizer model
     synthesizer_GC = GaussianCopulaSynthesizer(
@@ -39,8 +36,6 @@ def gcs(dataframe):
     )
     # fit model on dataframe
     synthesizer_GC.fit(dataframe)
-    # num_rows = len(dataframe)*10
-    # print('hi', len(dataframe))
     # generate synthetic data
     GC_synthetic_data = synthesizer_GC.sample(num_rows=100)
 

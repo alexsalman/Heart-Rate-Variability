@@ -15,7 +15,6 @@ synthetic data generation, deep learning techniques, and transfer learning.*
 - [License](#license)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Evals](#evals)
 - [Project Organization](#project-organization)
 
 ## 📜 License
@@ -24,50 +23,62 @@ You are free to use, modify, and distribute this project for any purpose. Howeve
 Refer to our, [MIT License](https://github.com/alexsalman/heart_rate_variability?tab=MIT-1-ov-file).
 
 ## 🔧 Installation
-###### Clone the repository
+##### Clone the repository
 ```
 git clone https://github.com/alexsalman/heart_rate_variability.git
 ```
-###### Change directory
+##### Change directory
 ```
 cd heart_rate_variability
 ```
-###### Create conda environment 
+##### Create conda environment 
 ```
 conda create -n <env-name>
 ```
-###### Activate conda environment 
+##### Activate conda environment 
 ```
 source activate <env-name>
 ```
-###### Install software requirements
+##### Install software requirements
 ``
 pip install -r requirements.txt
 ``
 
 ## 🚀 Usage
-
-###### Data processing 
+##### Data processing
+###### Load datasets, undersample records, select features, shuffle, and split into train/test 
 ```
 python src/data/make_dataset.py data/raw/<Atrial Fibrillation Data> data/interim/
 ```
 ```
 python src/data/make_dataset.py data/raw/<Cardiovascular Event Data> data/interim/
 ```
-###### Synthetic data generation
+##### Synthetic data generation
+###### Create metadata for training sets and data generator objects, models fitting, and sample synthetic records
 ```
 python src/data/generate_synthetic.py data/interim/<Atrial Fibrillation Training Data> data/processed/
 ```
-###### Deep learning model trained on synthetic data of Atrial Fibrillation
 ```
-python src/models/train_model.py data/processed/<Atrial Fibrillation Synthetic Data> models/
+python src/data/generate_synthetic.py data/interim/<Cardiovascular Event Training Data> data/processed/
 ```
-###### Deep learning model tested on real data of Atrial Fibrillation
+##### Deep learning model: Atrial Fibrillation task
+###### Train fully connected neural network model on synthetic data
 ```
-python src/models/test_model.py data/interim/<Atrial Fibrillation Real Data> reports/figures/
+python src/models/train_model.py data/processed/<Atrial Fibrillation Synthetic Training Data> models/
 ```
-
-## 📊 Evals
+###### Test model on real data of Atrial Fibrillation
+```
+python src/models/test_model.py data/interim/<Atrial Fibrillation Real Test Data> reports/figures/
+```
+##### Deep/ transfer learning model: Cardiovascular Event task
+###### Train fully connected neural network model on synthetic + real data
+```
+python src/models/train_model.py data/processed/<Cardiovascular Event Synthetic/Real Training Data> models/
+```
+###### Test model on real data of Cardiovascular Event
+```
+python src/models/test_model.py data/interim/<Cardiovascular Event Real Test Data> reports/figures/
+```
 ## 📁 Project Organization
 
 ------------
