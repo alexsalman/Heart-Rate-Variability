@@ -40,9 +40,9 @@ conda create -n <env-name>
 source activate <env-name>
 ```
 ##### Install software requirements
-``
+```
 pip install -r requirements.txt
-``
+```
 
 ## 🚀 Usage
 ##### Data processing

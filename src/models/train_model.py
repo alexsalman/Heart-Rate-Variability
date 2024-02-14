@@ -19,7 +19,8 @@ from sklearn.preprocessing import StandardScaler
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.optimizers import Adam
-
+from sklearn.inspection import permutation_importance
+import matplotlib.pyplot as plt
 
 def test(model, x, y):
     y_probabilities = model.predict(x)
@@ -180,10 +181,24 @@ def main(input_filepath, output_filepath):
     model = fc_nn(x_train, y_train)
     test(model, x_test, y_test)
 
-    # Use SHAP to explain the model's predictions
-    explainer = shap.Explainer(model, masker=shap.maskers.Independent(data=x_train))
-    shap_values = explainer.shap_values(x_test)
-    shap.summary_plot(shap_values, x_test, feature_names=['PNS index', 'SNS index', 'Stress index', 'Mean RR  (ms)', 'SDNN (ms)', 'Mean HR (beats/min)',
+########
+    # # Get the weights of the model
+    # weights = model.get_weights()
+    #
+    # # Assuming the first layer is Dense and has 64 neurons
+    # weights_dense_layer = weights[0]
+    #
+    # # Calculate the absolute sum of weights for each feature
+    # feature_importance = np.abs(weights_dense_layer).sum(axis=1)
+    #
+    # # Sort features based on importance
+    # sorted_indices = np.argsort(feature_importance)[::-1]
+    #
+    # # Select the top 20 important features
+    # top_20_indices = sorted_indices[:20]
+    #
+    # # Assuming you have a list of feature names called feature_names
+    feature_names = ['PNS index', 'SNS index', 'Stress index', 'Mean RR  (ms)', 'SDNN (ms)', 'Mean HR (beats/min)',
                       'SD HR (beats/min)', 'Min HR (beats/min)', 'Max HR (beats/min)', 'RMSSD (ms)', 'NNxx (beats)',
                       'pNNxx (%)', 'RR tri index', 'TINN (ms)', 'DC (ms)', 'DCmod (ms)', 'AC (ms)', 'ACmod (ms)',
                       'VLF (Hz)', 'LF (Hz)', 'HF (Hz)', 'VLF (ms^2)', 'LF (ms^2)', 'HF (ms^2)', 'VLF (log)', 'LF (log)',
@@ -195,7 +210,83 @@ def main(input_filepath, output_filepath):
                       'LF (Hz) AR spectrum', 'HF (Hz) AR spectrum', 'VLF (ms^2) AR spectrum', 'LF (ms^2) AR spectrum',
                       'HF (ms^2) AR spectrum', 'VLF (log) AR spectrum', 'LF (log) AR spectrum', 'HF (log) AR spectrum',
                       'VLF (%) AR spectrum', 'LF (%) AR spectrum', 'HF (%) AR spectrum', 'LF (n.u.) AR spectrum',
-                      'HF (n.u.) AR spectrum'])
+                      'HF (n.u.) AR spectrum']
+    # # Plot only the top 20 important features with their names
+    # plt.figure(figsize=(15, 8))
+    # plt.bar(range(len(top_20_indices)), feature_importance[top_20_indices])
+    # plt.xlabel('Feature')
+    # plt.ylabel('Feature Importance')
+    # plt.title('Top 20 Feature Importance in the Model')
+    # plt.xticks(range(len(top_20_indices)), [feature_names[i] for i in top_20_indices], rotation=45, ha='right')
+    # plt.show()
+
+    # Function to calculate feature importance using gradients
+    def calculate_feature_importance(model, x_train, y_train, loss_fn, feature_names):
+        gradients = []
+        for x, y in zip(x_train, y_train):
+            x_tensor = tf.convert_to_tensor(x, dtype=tf.float32)  # Convert numpy array to TensorFlow tensor
+            with tf.GradientTape() as tape:
+                tape.watch(x_tensor)
+                predictions = model(x_tensor[np.newaxis, ...])
+                y_tensor = tf.convert_to_tensor(y, dtype=tf.float32)  # Convert label to TensorFlow tensor
+                y_tensor = tf.expand_dims(y_tensor, axis=-1)  # Expand dimensions to match predictions shape
+                loss = loss_fn(y_tensor, predictions)  # Use y_tensor instead of y directly
+            gradients.append(tape.gradient(loss, x_tensor))
+        aggregated_gradients = np.array(gradients).mean(axis=0)
+        aggregated_gradients /= np.max(np.abs(aggregated_gradients))  # Normalize gradients
+
+        # Create a dictionary mapping feature names to importance scores
+        feature_importance = {feature_names[i]: importance for i, importance in enumerate(aggregated_gradients)}
+
+        return feature_importance
+
+    # Define the loss function
+    loss_fn = tf.keras.losses.BinaryCrossentropy()
+
+    # # Define the list of feature names
+    # feature_names = ['Feature1', 'Feature2', 'Feature3', ...]  # Replace ... with the names of your features
+
+    # Calculate feature importance
+    feature_importance = calculate_feature_importance(model, x_train, y_train, loss_fn, feature_names)
+
+    sorted_feature_importance = dict(sorted(feature_importance.items(), key=lambda item: item[1], reverse=True))
+
+    # Extract the keys (feature names) and values (importance scores) separately
+    sorted_feature_names = list(sorted_feature_importance.keys())
+    sorted_feature_scores = list(sorted_feature_importance.values())
+
+    # Select the top 20 important features
+    top_20_feature_names = sorted_feature_names[:20]
+    top_20_feature_scores = sorted_feature_scores[:20]
+
+    # Plot top 20 feature importance
+    plt.figure(figsize=(10, 6))
+    plt.bar(top_20_feature_names, top_20_feature_scores)
+    plt.xlabel('Feature Name')
+    plt.ylabel('Feature Importance')
+    plt.title('Top 20 Feature Importance Using Gradients - Atrial Fibrillation')
+    plt.xticks(rotation=90)
+    plt.subplots_adjust(bottom=0.4)
+    plt.savefig('reports/figures/fi_af.png', dpi=800)
+    plt.show()
+
+########
+    # Use SHAP to explain the model's predictions
+    # explainer = shap.Explainer(model, masker=shap.maskers.Independent(data=x_train))
+    # shap_values = explainer.shap_values(x_test)
+    # shap.summary_plot(shap_values, x_test, feature_names=['PNS index', 'SNS index', 'Stress index', 'Mean RR  (ms)', 'SDNN (ms)', 'Mean HR (beats/min)',
+    #                   'SD HR (beats/min)', 'Min HR (beats/min)', 'Max HR (beats/min)', 'RMSSD (ms)', 'NNxx (beats)',
+    #                   'pNNxx (%)', 'RR tri index', 'TINN (ms)', 'DC (ms)', 'DCmod (ms)', 'AC (ms)', 'ACmod (ms)',
+    #                   'VLF (Hz)', 'LF (Hz)', 'HF (Hz)', 'VLF (ms^2)', 'LF (ms^2)', 'HF (ms^2)', 'VLF (log)', 'LF (log)',
+    #                   'HF (log)', 'VLF (%)', 'LF (%)', 'HF (%)', 'LF (n.u.)', 'HF (n.u.)', 'Total power (ms^2)',
+    #                   'LF/HF ratio', 'RESP (Hz)', 'SD1 (ms)', 'SD2 (ms)', 'SD2/SD1 ratio', 'Approximate entropy (ApEn)',
+    #                   'Sample entropy (SampEn)', 'alpha 1', 'alpha 2', 'Correlation dimension (D2)',
+    #                   'Mean line length (beats)', 'Max line length (beats)', 'Recurrence rate (REC) (%)',
+    #                   'Determinism (DET) (%)', 'Shannon entropy', 'MSE(1)', 'MSE(2)', 'VLF (Hz) AR spectrum',
+    #                   'LF (Hz) AR spectrum', 'HF (Hz) AR spectrum', 'VLF (ms^2) AR spectrum', 'LF (ms^2) AR spectrum',
+    #                   'HF (ms^2) AR spectrum', 'VLF (log) AR spectrum', 'LF (log) AR spectrum', 'HF (log) AR spectrum',
+    #                   'VLF (%) AR spectrum', 'LF (%) AR spectrum', 'HF (%) AR spectrum', 'LF (n.u.) AR spectrum',
+    #                   'HF (n.u.) AR spectrum'])
     # plt.savefig('reports/figures/SHAP_AF.png', dpi=800)
 
 
@@ -205,8 +296,8 @@ def main(input_filepath, output_filepath):
     else:
         output_filepath
     path = output_filepath + '/' + 'florance_model.keras'
-    model.save(path, save_format="tf")
-    np.savetxt(output_filepath + '/' + 'scaled_florance_test_features.csv', x_test, delimiter=',')
+    # model.save(path, save_format="tf")
+    # np.savetxt(output_filepath + '/' + 'scaled_florance_test_features.csv', x_test, delimiter=',')
 
     logger = logging.getLogger(__name__)
     logger.info(
