@@ -1,7 +1,7 @@
 Heart Rate Variability (HRV) Processing
 ==============================
 
-![Framework](framework2.png)
+![Framework](goret1.jpg)
 *Schematic Overview of HRV Classification Pipeline.*
 
 🔍 Overview
