@@ -30,12 +30,12 @@ synthetic data generation, deep learning techniques, and transfer learning.*
 
 ## 📑 Table of Contents
 
-- `[License](#license)`
+- [License](#license)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Organization](#project-organization)
 
-## 📜 License
+## License 📜
 You are free to use, modify, and distribute this project for any purpose. However, if you use this project in your work or derive from it, you must provide appropriate attribution by referencing this repository.
 
 Refer to our, [MIT License](https://github.com/alexsalman/heart_rate_variability?tab=MIT-1-ov-file).
