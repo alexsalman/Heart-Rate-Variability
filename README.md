@@ -22,25 +22,25 @@ If you use this work, please cite it as:
 }
 ```
 
-🔍 Overview
+Overview
 ------------
 *In this study, we tackle the processing of patients’ heart rate variability (HRV)
 datasets for two classification tasks employing resource-efficient methods,
 synthetic data generation, deep learning techniques, and transfer learning.* 
 
-## 📑 Table of Contents
+## Table of Contents
 
 - [License](#license)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Organization](#project-organization)
 
-## License 📜
+## License
 You are free to use, modify, and distribute this project for any purpose. However, if you use this project in your work or derive from it, you must provide appropriate attribution by referencing this repository.
 
 Refer to our, [MIT License](https://github.com/alexsalman/heart_rate_variability?tab=MIT-1-ov-file).
 
-## 🔧 Installation
+## Installation
 ##### Clone the repository
 ```
 git clone https://github.com/alexsalman/heart_rate_variability.git
@@ -62,7 +62,7 @@ source activate <env-name>
 pip install -r requirements.txt
 ```
 
-## 🚀 Usage
+## Usage
 ##### Data processing
 ###### Load datasets, undersample records, select features, shuffle, and split into train/test 
 ```
@@ -97,7 +97,7 @@ python src/models/train_model.py data/processed/<Cardiovascular Event Synthetic/
 ```
 python src/models/test_model.py data/interim/<Cardiovascular Event Real Test Data> reports/figures/
 ```
-## 📁 Project Organization
+## Project Organization
 
 ------------
 
