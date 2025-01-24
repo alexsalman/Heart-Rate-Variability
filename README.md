@@ -30,7 +30,7 @@ synthetic data generation, deep learning techniques, and transfer learning.*
 
 ## 📑 Table of Contents
 
-- [License](#license)
+- `[License](#license)`
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Organization](#project-organization)
