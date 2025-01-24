@@ -1,8 +1,26 @@
 Heart Rate Variability (HRV) Processing
 ==============================
 
-![Framework](goret1.jpg)
+![Framework](abstract.jpg)
 *Schematic Overview of HRV Classification Pipeline.*
+
+## Citation
+
+If you use this work, please cite it as:
+
+```bibtex
+@article{goretti2025deep,
+  title={Deep Learning for Risky Cardiovascular and Cerebrovascular Event Prediction in Hypertensive Patients},
+  author={Goretti, F. and Salman, A. and Cartocci, A. and Luschi, A. and Pecchia, L. and Milli, M. and Iadanza, E.},
+  journal={Applied Sciences},
+  volume={15},
+  number={3},
+  pages={1178},
+  year={2025},
+  publisher={MDPI},
+  doi={10.3390/app15031178}
+}
+
 
 🔍 Overview
 ------------
